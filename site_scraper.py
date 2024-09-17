@@ -11,6 +11,15 @@ from urllib.parse import urljoin
 from datetime import datetime, timedelta
 import json
 
+class PrettyJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%d')
+        return super().default(obj)
+
+    def encode(self, obj):
+        return super().encode(obj)
+
 def setup_driver():
     chrome_options = Options()
     # chrome_options.add_argument("--headless")  # Uncomment to run in headless mode
@@ -45,25 +54,20 @@ def clean_body_content(body_content):
                 script_or_style.extract()
             
             # Get text from the article
-            article_text = article.get_text(separator="\n")
-            cleaned_article = "\n".join(
-                line.strip() for line in article_text.splitlines() if line.strip()
-            )
+            article_text = article.get_text(separator=' ')
+            cleaned_article = ' '.join(article_text.split())
             cleaned_content.append(cleaned_article)
         
-        return "\n\n".join(cleaned_content)
+        return ' '.join(cleaned_content)
     else:
         # If no article tags are found, fall back to the original method
         for script_or_style in soup(["script", "style"]):
             script_or_style.extract()
 
-        cleaned_content = soup.get_text(separator="\n")
-        cleaned_content = "\n".join(
-            line.strip() for line in cleaned_content.splitlines() if line.strip()
-        )
+        cleaned_content = soup.get_text(separator=' ')
+        cleaned_content = ' '.join(cleaned_content.split())
 
         return cleaned_content
-
 def is_article_link(url):
     article_indicators = ['/ada-news']
     return any(indicator in url for indicator in article_indicators)
@@ -106,36 +110,46 @@ def get_article_info(driver, link):
 
 
 if __name__ == "__main__":
-    target_url = "https://adanews.ada.org/topic/government"
+    base_url = "https://adanews.ada.org/topic/"
+    topics = {"Government": "government", 
+              "Practice": "practice", 
+              "Access To Care": "access-to-care",
+              "Education": "education",
+              "Science": "science",
+              "Around the ADA": "around-the-ada"}
     driver = setup_driver()
-    
-    # Scrape the main page
-    main_page_content = scrape_website(driver, target_url)
-    article_links = extract_article_links(main_page_content, target_url)
-    
-    # Filter and categorize articles
-    filtered_categorized_links = []
-    for link in article_links:
-        publish_date = get_article_info(driver, link)
-        if publish_date and is_within_last_week(publish_date):
-            filtered_categorized_links.append((link, publish_date))
-
     articles_data = []
-    for link, publish_date in filtered_categorized_links:
-        html = scrape_website(driver, link)
-        body = extract_body_content(html)
-        cleaned_content = clean_body_content(body)
+    for topic, url_suffix in topics.items():
+        target_url = base_url + url_suffix
+        # Scrape the main page
+        main_page_content = scrape_website(driver, target_url)
+        article_links = extract_article_links(main_page_content, target_url)
         
-        article_data = {
-            "url": link,
-            "publish_date": publish_date.strftime('%Y-%m-%d'),
-            "content": cleaned_content
-        }
-        articles_data.append(article_data)
+        # Filter and categorize articles
+        filtered_categorized_links = []
+        for link in article_links:
+            publish_date = get_article_info(driver, link)
+            if publish_date and is_within_last_week(publish_date):
+                filtered_categorized_links.append((link, publish_date))
+
+        
+        for link, publish_date in filtered_categorized_links:
+            html = scrape_website(driver, link)
+            body = extract_body_content(html)
+            cleaned_content = clean_body_content(body)
+            
+            article_data = {
+                "url": link,
+                "publish_date": publish_date,
+                "content": cleaned_content,
+                "topic": topic
+            }
+            articles_data.append(article_data)
+        print(f"Finished article extraction for {topic}")
 
     # Save articles data as JSON
     with open("scraped_articles.json", "w", encoding="utf-8") as f:
-        json.dump(articles_data, f, ensure_ascii=False, indent=2)
+        json.dump(articles_data, f, ensure_ascii=False, indent=2, cls=PrettyJSONEncoder)
 
     print(f"Scraped and saved {len(articles_data)} articles from the past week.")
     driver.quit()
