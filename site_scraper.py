@@ -22,7 +22,6 @@ def scrape_website(driver, url):
     return driver.page_source
 
 def is_article_link(url):
-    # Adjust these patterns based on the website's URL structure for articles
     article_indicators = ['/ada-news']
     return any(indicator in url for indicator in article_indicators)
 
@@ -59,20 +58,9 @@ def get_article_info(driver, link):
     else:
         publish_date = None
     
-    # Extract category (you can keep your existing categorization logic here)
-    category = categorize_article(soup, link)
     
-    return publish_date, category
+    return publish_date
 
-def categorize_article(soup, link):
-    if soup.find('meta', property='article:section'):
-        return soup.find('meta', property='article:section')['content']
-    elif soup.find('span', class_='category'):
-        return soup.find('span', class_='category').text.strip()
-    elif re.search(r'(news|article|story)', link, re.I):
-        return 'General Article'
-    else:
-        return 'Uncategorized'
 
 if __name__ == "__main__":
     target_url = "https://adanews.ada.org/topic/government"
@@ -85,14 +73,16 @@ if __name__ == "__main__":
     # Filter and categorize articles
     filtered_categorized_links = []
     for link in article_links:
-        publish_date, category = get_article_info(driver, link)
+        publish_date = get_article_info(driver, link)
         if publish_date and is_within_last_week(publish_date):
-            filtered_categorized_links.append((link, category, publish_date))
+            filtered_categorized_links.append((link, publish_date))
     
     # Save filtered and categorized links to file
     with open("filtered_categorized_links.txt", "w", encoding="utf-8") as f:
-        for link, category, publish_date in filtered_categorized_links:
-            f.write(f"{category} - {publish_date.strftime('%Y-%m-%d')}: {link}\n")
+        i = 0
+        for link, publish_date in filtered_categorized_links:
+            f.write(f"{i} - {publish_date.strftime('%Y-%m-%d')}: {link}\n")
+            i += 1
     
     print(f"Scraped, filtered, and categorized {len(filtered_categorized_links)} article links from the past week.")
     driver.quit()
