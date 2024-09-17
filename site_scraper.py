@@ -41,14 +41,17 @@ def extract_body_content(html_content):
 
 def clean_body_content(body_content):
     soup = BeautifulSoup(body_content, "html.parser")
-
-    # Find all article tags
     articles = soup.find_all('article')
-
+    
     if articles:
-        # If article tags are found, process only those
         cleaned_content = []
+        title = ""
         for article in articles:
+            # Extract title
+            h1_tag = article.find('h1')
+            if h1_tag:
+                title = h1_tag.get_text(strip=True)
+            
             # Remove script and style elements
             for script_or_style in article(["script", "style"]):
                 script_or_style.extract()
@@ -58,16 +61,20 @@ def clean_body_content(body_content):
             cleaned_article = ' '.join(article_text.split())
             cleaned_content.append(cleaned_article)
         
-        return ' '.join(cleaned_content)
+        return title, ' '.join(cleaned_content)
     else:
         # If no article tags are found, fall back to the original method
         for script_or_style in soup(["script", "style"]):
             script_or_style.extract()
 
+        h1_tag = soup.find('h1')
+        title = h1_tag.get_text(strip=True) if h1_tag else ""
+
         cleaned_content = soup.get_text(separator=' ')
         cleaned_content = ' '.join(cleaned_content.split())
 
-        return cleaned_content
+        return title, cleaned_content
+
 def is_article_link(url):
     article_indicators = ['/ada-news']
     return any(indicator in url for indicator in article_indicators)
@@ -136,11 +143,12 @@ if __name__ == "__main__":
         for link, publish_date in filtered_categorized_links:
             html = scrape_website(driver, link)
             body = extract_body_content(html)
-            cleaned_content = clean_body_content(body)
+            title, cleaned_content = clean_body_content(body)
             
             article_data = {
                 "url": link,
                 "publish_date": publish_date,
+                "title": title,
                 "content": cleaned_content,
                 "topic": topic
             }
