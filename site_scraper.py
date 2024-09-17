@@ -21,6 +21,28 @@ def scrape_website(driver, url):
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
     return driver.page_source
 
+def extract_body_content(html_content):
+    soup = BeautifulSoup(html_content, "html.parser")
+    body_content = soup.body
+    if body_content:
+        return str(body_content)
+    return ""
+
+
+def clean_body_content(body_content):
+    soup = BeautifulSoup(body_content, "html.parser")
+
+    for script_or_style in soup(["script", "style"]):
+        script_or_style.extract()
+
+    # Get text or further process the content
+    cleaned_content = soup.get_text(separator="\n")
+    cleaned_content = "\n".join(
+        line.strip() for line in cleaned_content.splitlines() if line.strip()
+    )
+
+    return cleaned_content
+
 def is_article_link(url):
     article_indicators = ['/ada-news']
     return any(indicator in url for indicator in article_indicators)
@@ -76,13 +98,24 @@ if __name__ == "__main__":
         publish_date = get_article_info(driver, link)
         if publish_date and is_within_last_week(publish_date):
             filtered_categorized_links.append((link, publish_date))
+
+    res = []
+    for link, publish_date in filtered_categorized_links:
+        html = scrape_website(driver, link)
+        body = extract_body_content(html)
+        res.append(clean_body_content(body))
+
+    with open("scraped_text.txt", "w", encoding="utf-8") as f:
+        for element in res:
+            f.write(element)
     
-    # Save filtered and categorized links to file
-    with open("filtered_categorized_links.txt", "w", encoding="utf-8") as f:
-        i = 0
-        for link, publish_date in filtered_categorized_links:
-            f.write(f"{i} - {publish_date.strftime('%Y-%m-%d')}: {link}\n")
-            i += 1
+
+    # # Save filtered and categorized links to file
+    # with open("filtered_categorized_links.txt", "w", encoding="utf-8") as f:
+    #     i = 0
+    #     for link, publish_date in filtered_categorized_links:
+    #         f.write(f"{i} - {publish_date.strftime('%Y-%m-%d')}: {link}\n")
+    #         i += 1
     
     print(f"Scraped, filtered, and categorized {len(filtered_categorized_links)} article links from the past week.")
     driver.quit()
