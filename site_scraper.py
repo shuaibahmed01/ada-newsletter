@@ -52,6 +52,10 @@ def clean_body_content(body_content):
             if h1_tag:
                 title = h1_tag.get_text(strip=True)
             
+            strong_tag = article.find('strong')
+            if strong_tag:
+                author = strong_tag.get_text(strip = True)
+            
             # Remove script and style elements
             for script_or_style in article(["script", "style"]):
                 script_or_style.extract()
@@ -61,7 +65,7 @@ def clean_body_content(body_content):
             cleaned_article = ' '.join(article_text.split())
             cleaned_content.append(cleaned_article)
         
-        return title, ' '.join(cleaned_content)
+        return author,title, ' '.join(cleaned_content)
     else:
         # If no article tags are found, fall back to the original method
         for script_or_style in soup(["script", "style"]):
@@ -143,14 +147,15 @@ if __name__ == "__main__":
         for link, publish_date in filtered_categorized_links:
             html = scrape_website(driver, link)
             body = extract_body_content(html)
-            title, cleaned_content = clean_body_content(body)
+            author, title, cleaned_content = clean_body_content(body)
             
             article_data = {
                 "url": link,
                 "publish_date": publish_date,
                 "title": title,
                 "content": cleaned_content,
-                "topic": topic
+                "topic": topic,
+                "author": author
             }
             articles_data.append(article_data)
         print(f"Finished article extraction for {topic}")
