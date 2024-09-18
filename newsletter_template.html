@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADA News Newsletter</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+        .container { 
+            max-width: 800px; 
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            border-radius: 8px;
+        }
+        h1 { 
+            color: #0056b3; 
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        h2 { 
+            color: #0056b3; 
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .article { 
+            margin-bottom: 40px; 
+            border-bottom: 1px solid #e0e0e0; 
+            padding-bottom: 30px; 
+            text-align: center;
+        }
+        .article img { 
+            max-width: 100%; 
+            height: auto; 
+            display: block;
+            margin: 20px auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .footer { 
+            text-align: center; 
+            padding: 20px 0; 
+            color: #666666; 
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 30px;
+        }
+        .footer p {
+            margin: 5px 0;
+            text-align: center;
+        }
+        .read-more {
+            display: inline-block;
+            text-align: center; 
+            margin-top: 15px;
+            padding: 8px 15px;
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .read-more:hover {
+            background-color: #003d82;
+        }
+        p { 
+            text-align: justify; 
+            font-size: 1em;
+            line-height: 1.8;
+            color: #444;
+        }
+        .article-meta {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .date {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ADA News Newsletter</h1>
+        <p class="date" style="text-align: center;">{{ date }}</p>
+
+        {% for article in articles %}
+        <div class="article">
+            <h2>{{ article.title }}</h2>
+            <img src="{{ article.image_url }}" alt="{{ article.title }}">
+            <p class="article-meta"><strong>{{ article.author }} - {{ article.publish_date.strftime('%B %d, %Y') }}</strong></p>
+            <p>{{ article.summary }}</p>
+            <a class="read-more" href="{{ article.url }}">Read more</a>
+        </div>
+        {% endfor %}
+
+        <div class="footer">
+            <p>&copy; 2023 ADA. All rights reserved.</p>
+            <p>You're receiving this email because you signed up for our newsletter.</p>
+            <p><a href="#">Unsubscribe</a></p>
+        </div>
+    </div>
+</body>
+</html>

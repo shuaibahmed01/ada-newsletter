@@ -46,6 +46,8 @@ def clean_body_content(body_content):
     if articles:
         cleaned_content = []
         title = ""
+        author = ""
+        image_url = None
         for article in articles:
             # Extract title
             h1_tag = article.find('h1')
@@ -54,7 +56,12 @@ def clean_body_content(body_content):
             
             strong_tag = article.find('strong')
             if strong_tag:
-                author = strong_tag.get_text(strip = True)
+                author = strong_tag.get_text(strip=True)
+            
+            # Extract image URL
+            img_tag = article.find('img', class_='img-fluid')
+            if img_tag and 'src' in img_tag.attrs:
+                image_url = "https://adanews.ada.org" + img_tag['src']
             
             # Remove script and style elements
             for script_or_style in article(["script", "style"]):
@@ -65,7 +72,7 @@ def clean_body_content(body_content):
             cleaned_article = ' '.join(article_text.split())
             cleaned_content.append(cleaned_article)
         
-        return author,title, ' '.join(cleaned_content)
+        return author, title, ' '.join(cleaned_content), image_url
     else:
         # If no article tags are found, fall back to the original method
         for script_or_style in soup(["script", "style"]):
@@ -77,7 +84,9 @@ def clean_body_content(body_content):
         cleaned_content = soup.get_text(separator=' ')
         cleaned_content = ' '.join(cleaned_content.split())
 
-        return title, cleaned_content
+        image_url = extract_image_url(body_content)
+
+        return "", title, cleaned_content, image_url
 
 def is_article_link(url):
     article_indicators = ['/ada-news']
@@ -118,4 +127,11 @@ def get_article_info(driver, link):
     
     
     return publish_date
+
+def extract_image_url(html_content):
+    soup = BeautifulSoup(html_content, "html.parser")
+    img_tag = soup.find('img', class_='img-fluid')
+    if img_tag and 'src' in img_tag.attrs:
+        return img_tag['src']
+    return None
 
