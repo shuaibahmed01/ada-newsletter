@@ -3,7 +3,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
-import datetime
+from datetime import datetime
+import ssl
 
 def send_newsletter_email(newsletter_content):
     # Load environment variables
@@ -21,7 +22,6 @@ def send_newsletter_email(newsletter_content):
     msg['From'] = sender_email
     msg['To'] = recipient_email
     msg['Subject'] = f"ADA News Newsletter - {datetime.now().strftime('%B %d, %Y')}"
-
 
     # Attach the HTML content
     msg.attach(MIMEText(newsletter_content, 'html'))

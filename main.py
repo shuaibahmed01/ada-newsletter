@@ -4,7 +4,6 @@ from newsletter_generation import generate_newsletter
 from nl_agent import summarize_chain
 import json
 from datetime import datetime
-from jinja2 import Environment, FileSystemLoader
 
 class PrettyJSONEncoder(json.JSONEncoder):
     def default(self, obj):

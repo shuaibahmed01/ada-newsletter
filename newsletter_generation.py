@@ -1,5 +1,5 @@
 from jinja2 import Environment, FileSystemLoader
-import datetime
+from datetime import datetime
 
 def generate_newsletter(articles):
     # Set up Jinja2 environment
