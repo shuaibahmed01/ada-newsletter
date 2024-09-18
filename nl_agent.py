@@ -32,6 +32,8 @@ Analyze and summarize the following article in 4-5 concise sentences. Your summa
 5. Implications: If applicable, briefly mention any potential impacts or consequences discussed.
 6. Timeframe: Include relevant dates or time periods mentioned in the article.
 
+MAKE SURE THE SUMMARY IS 50 WORDS MAXIMUM. This rule is important should always be adhered.
+
 Use each of those guidelines as points to include in the summary, however please write the summary as a paragraph. As if it is giving the reader an intro and quick look into what the article is discussing.
 
 Ensure that your summary gives a reader a comprehensive overview of the article's content without unnecessary details. Maintain a neutral tone and focus on factual information.
