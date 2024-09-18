@@ -1,5 +1,6 @@
-import os
 from site_scraper import setup_driver, scrape_website, extract_article_links, get_article_info, is_within_last_week, extract_body_content, clean_body_content
+from send_newsletter import send_newsletter_email
+from newsletter_generation import generate_newsletter
 from nl_agent import summarize_chain
 import json
 from datetime import datetime
@@ -76,27 +77,8 @@ def main():
 
     print("Summaries generated and added to scraped_articles_with_summaries.json")
 
-    generate_newsletter(articles_data)
-
-def generate_newsletter(articles):
-    # Set up Jinja2 environment
-    env = Environment(loader=FileSystemLoader('.'))
-    template = env.get_template('newsletter_template.html')
-
-    # Format the date
-    formatted_date = datetime.now().strftime("%B %d, %Y")
-
-    # Render the template with the articles data
-    newsletter_html = template.render(
-        articles=articles,
-        date=formatted_date
-    )
-
-    # Write the output to a file
-    with open('newsletter.html', 'w') as f:
-        f.write(newsletter_html)
-
-    print("Newsletter generated successfully!")
+    newsletter_html = generate_newsletter(articles_data)
+    send_newsletter_email(newsletter_html)
 
 if __name__ == "__main__":
     main()
