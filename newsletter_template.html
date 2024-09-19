@@ -69,7 +69,7 @@
             margin-top: 15px;
             padding: 8px 15px;
             background-color: #0056b3;
-            color: white;
+            color: white !important; /* Added !important */
             text-decoration: none;
             border-radius: 4px;
             transition: background-color 0.3s ease;
@@ -113,10 +113,10 @@
                         <article>
                             <h3>{{ article.title }}</h3>
                             <p class="article-meta"><strong>Author:</strong> {{ article.author }}</p>
-                            <p class="article-meta"><strong>Published:</strong> {{ article.publish_date }}</p>
+                            <p class="article-meta"><strong>Published:</strong> {{ article.formatted_publish_date }}</p>
                             <img src="{{ article.image_url }}" alt="Article image">
                             <p>{{ article.summary }}</p>
-                            <a href="{{ article.url }}" class="read-more">Read more</a>
+                            <a href="{{ article.url }}" class="read-more" style="color: white !important; background-color: #0056b3; text-decoration: none; padding: 8px 15px; border-radius: 4px;">Read more</a>
                         </article>
                     {% endfor %}
                 </section>
