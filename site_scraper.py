@@ -109,7 +109,7 @@ def parse_date(date_string):
 
 def is_within_last_week(publish_date):
     current_date = datetime.now()
-    one_week_ago = current_date - timedelta(days=7)
+    one_week_ago = current_date - timedelta(days=14)
     return publish_date >= one_week_ago
 
 def get_article_info(driver, link):

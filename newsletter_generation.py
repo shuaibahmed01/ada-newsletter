@@ -15,7 +15,7 @@ def generate_newsletter(articles):
     current_date = datetime.now()
     
     # Calculate the start of the week (Monday)
-    start_of_week = current_date - timedelta(days=7)
+    start_of_week = current_date - timedelta(days=14)
     
     # Format the date range
     formatted_date_range = f"{start_of_week.strftime('%B %d')} - {current_date.strftime('%B %d, %Y')}"
