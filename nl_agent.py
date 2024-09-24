@@ -28,7 +28,7 @@ Analyze and summarize the following article in 4-5 concise sentences. Your summa
 1. Main Topic: Clearly state the primary subject or issue discussed in the article.
 2. Key Individuals: Identify and mention any significant people or organizations involved.
 3. Important Events: Highlight any notable events, decisions, or actions described.
-4. Context: Provide brief background information if necessary for understanding the topic.
+4. Context: Provide brief background information if necessary for understanding the topic, this includes any important dates that you feel should not be left out.
 5. Implications: If applicable, briefly mention any potential impacts or consequences discussed.
 6. Timeframe: Include relevant dates or time periods mentioned in the article.
 
